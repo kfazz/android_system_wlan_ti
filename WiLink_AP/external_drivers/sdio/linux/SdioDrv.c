@@ -44,7 +44,6 @@
 #include <mach/resource.h>
 #endif
 typedef void *TI_HANDLE;
-#include <linux/of.h>
 #include "host_platform.h"
 #include "SdioDrvDbg.h"
 #include "SdioDrv.h"
@@ -272,15 +271,6 @@ void sdio_init( int sdcnum )
 {
 	struct device_node *node;
 	const void *sdcnum_prop;
-
-	/* Check for sdcnum override from device tree */
-	node = of_find_node_by_path("/System@0/SDHC@0/SDHCSLOT@2");
-	if ( node ) {
-		sdcnum_prop = of_get_property(node,"sdcnum", NULL);
-		if ( sdcnum_prop ) {
-			sdcnum = *(unsigned char *)sdcnum_prop;
-		}
-	}
 
 	if( sdcnum <= 0 )
 		return;

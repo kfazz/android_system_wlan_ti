@@ -1092,14 +1092,14 @@ static void wlanDrvIf_Destroy (TWlanDrvIfObj *drv)
  * \sa     wlanDrvIf_Create, wlanDrvIf_Destroy
  */
 
-//static int sdc_ctrl = 2;
-//module_param(sdc_ctrl, int, S_IRUGO | S_IWUSR | S_IWGRP);
+static int sdc_ctrl = 2;
+module_param(sdc_ctrl, int, S_IRUGO | S_IWUSR | S_IWGRP);
 
 static int __init wlanDrvIf_ModuleInit (void)
 {
     pr_info("TIWLAN: driver init\n");
 #ifndef CONFIG_MMC_EMBEDDED_SDIO
-    sdioDrv_init();
+    sdioDrv_init(sdc_ctrl);
 #endif
     return wlanDrvIf_Create ();
 }

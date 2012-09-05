@@ -165,7 +165,7 @@ int sdioDrv_WriteSyncBytes (unsigned int  uFunc,
                             unsigned int  uLen,
                             unsigned int  bMore);
 
-int sdioDrv_init(void);
+int sdioDrv_init(int);
 void sdioDrv_exit(void);
 int  sdioDrv_clk_enable(void);
 void sdioDrv_clk_disable(void);

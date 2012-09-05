@@ -79,10 +79,13 @@ typedef void * TI_HANDLE;
 /*
  * HSMMC Address and DMA Settings
  */
-static unsigned long TIWLAN_MMC_CONTROLLER_BASE_ADDR = OMAP_HSMMC3_BASE;
 
+static unsigned long TIWLAN_MMC_CONTROLLER = 2; /* MMC3 */
+static unsigned long TIWLAN_MMC_CONTROLLER_BASE_ADDR = OMAP_HSMMC3_BASE;
+#define TIWLAN_MMC_CONTROLLER_BASE_SIZE	512
 static unsigned long TIWLAN_MMC_DMA_TX = OMAP34XX_DMA_MMC3_TX;
 static unsigned long TIWLAN_MMC_DMA_RX = OMAP34XX_DMA_MMC3_RX;
+static unsigned long OMAP_MMC_IRQ = INT_MMC3_IRQ;
 
 #define OMAP_MMC_MASTER_CLOCK          96000000
 /*
@@ -296,21 +299,23 @@ static void sdioDrv_hsmmc_restore_ctx(void);
 static void sdiodrv_dma_shutdown(void);
 static void sdioDrv_inact_timer(unsigned long);
 
-#if 0
+
 /* MMC port init is done by the kernel on boot */
 void sdio_init( int sdcnum )
 {
 	struct device_node *node;
 	const void *sdcnum_prop;
 
+
 	/* Check for sdcnum override from device tree */
+/*
 	node = of_find_node_by_path("/System@0/SDHC@0/SDHCSLOT@2");
 	if ( node ) {
 		sdcnum_prop = of_get_property(node,"sdcnum", NULL);
 		if ( sdcnum_prop ) {
 			sdcnum = *(unsigned char *)sdcnum_prop;
 		}
-	}
+	}*/
 	printk("in sdio_init() sdcnum= %d \n", sdcnum);
 	if( sdcnum <= 0 )
 		return;
@@ -328,7 +333,7 @@ void sdio_init( int sdcnum )
 		OMAP_MMC_IRQ = INT_MMC3_IRQ;
 	}
 }
-#endif
+
 
 static void sdioDrv_hsmmc_save_ctx(void)
 {
@@ -1374,12 +1379,14 @@ done:
 	spin_unlock_irqrestore(&g_drv.clk_lock, flags);
 }
 
-int sdioDrv_init(void)
+int sdioDrv_init(int sdcnum )
 {
 	memset(&g_drv, 0, sizeof(g_drv));
 	memset(&hsmmc_ctx, 0, sizeof(hsmmc_ctx));
 
 	pr_info("TIWLAN: SDIO init\n");
+
+	sdio_init( sdcnum );
 
 	/* MMC port init is done by the kernel on boot */
 	g_drv.pWorkQueue = create_freezeable_workqueue(SDIO_WQ_NAME);
